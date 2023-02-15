@@ -4,13 +4,10 @@ import {MongooseModule} from '@nestjs/mongoose';
 
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
+import {UsersModule} from './users/users.module';
 
 @Module({
-    imports: [
-        MongooseModule.forRoot(
-            `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@localhost:27017/${process.env.MONGO_DATABASE}`,
-        ),
-    ],
+    imports: [MongooseModule.forRoot(process.env.MONGO_URL), UsersModule],
     controllers: [AppController],
     providers: [AppService],
 })
