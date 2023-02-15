@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:5.0.0
+    container_name: ch42-mongodb
+    env_file:
+      - .env.development
+    networks:
+      - ch42-network
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  dev:
+    container_name: ch42-dev
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      - ch42-network
+    command: pnpm run start:dev
+    env_file:
+      - .env.development
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+
+networks:
+  ch42-network:
+volumes:
+  mongodb_data_container:
