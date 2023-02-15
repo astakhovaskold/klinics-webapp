@@ -4,18 +4,36 @@ services:
   mongodb:
     image: mongo:5.0.0
     container_name: ch42-mongodb
-    env_file:
-      - .env.development
     networks:
       - ch42-network
     ports:
       - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
       interval: 30s
       timeout: 10s
       retries: 3
+    restart: always
+
+  prod:
+    container_name: ch42-prod
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 80:3000
+    networks:
+      - ch42-network
+    command: pnpm run start:prod
+    env_file:
+      - .env.development
     restart: unless-stopped
+    depends_on:
+      - mongodb
 
   dev:
     container_name: ch42-dev
