@@ -17,4 +17,4 @@ db.createUser({
 
 db.createCollection('users', {capped: false});
 
-db.users.insertOne({nickname: 'admin', password: '0000'});
+db.users.insertOne({nickname: 'admin', password: '123456', role: 'ADMIN', is_active: true});

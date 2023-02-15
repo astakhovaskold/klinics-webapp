@@ -28,9 +28,11 @@ services:
       - 80:3000
     networks:
       - ch42-network
-    command: pnpm run start:prod
+    command:
+      - pnpm run build
+      - pnpm run start:prod
     env_file:
-      - .env.development
+      - .env.production
     restart: unless-stopped
     depends_on:
       - mongodb

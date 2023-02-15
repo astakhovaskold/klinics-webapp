@@ -9,11 +9,8 @@ COPY package.json ./
 COPY pnpm-lock.yaml ./
 
 # Install app dependencies
-RUN npm install -g pnpm
-RUN pnpm install
+RUN npm install -g pnpm@7.27.0
+RUN pnpm install --frozen-lockfile
 
 # Bundle app source
 COPY . .
-
-# Creates a "dist" folder with the production build
-RUN pnpm run build
