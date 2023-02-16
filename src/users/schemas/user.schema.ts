@@ -27,7 +27,7 @@ export class User {
     middle_name: string;
 
     @Prop({required: true, enum: ROLE})
-    role: string;
+    role: ROLE;
 
     @Prop({required: true, default: true})
     is_active: boolean;

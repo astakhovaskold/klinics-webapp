@@ -12,7 +12,7 @@ export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
     async getAll(): Promise<Array<UserEntity>> {
-        return this.userModel.find();
+        return this.userModel.find().sort({nickname: 'asc'});
     }
 
     async create(product: CreateUserDTO): Promise<User> {
