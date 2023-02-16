@@ -27,4 +27,8 @@ export class UsersService {
         const created = new this.userModel({...product, password: hash});
         return created.save();
     }
+
+    async remove(id: string): Promise<UserEntity> {
+        return this.userModel.findByIdAndUpdate(id, {is_active: false}, {new: true});
+    }
 }
