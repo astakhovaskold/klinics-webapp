@@ -1,4 +1,14 @@
-import {BadRequestException, Body, Controller, Get, Post, UsePipes, ValidationPipe} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 
 import {ApiTags} from '@nestjs/swagger';
 
@@ -25,5 +35,10 @@ export class UsersController {
         } catch (e) {
             throw new BadRequestException(e.message);
         }
+    }
+
+    @Delete(':id')
+    async remove(@Param('id') id: string): Promise<UserEntity> {
+        return this.usersService.remove(id);
     }
 }
