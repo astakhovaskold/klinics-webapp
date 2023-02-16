@@ -4,11 +4,16 @@ import * as bcrypt from 'bcrypt';
 import {Model} from 'mongoose';
 
 import {CreateUserDTO} from './dto/create-user.dto';
+import {UserEntity} from './entities/user.entity';
 import {User, UserDocument} from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+    async getAll(): Promise<Array<UserEntity>> {
+        return this.userModel.find();
+    }
 
     async create(product: CreateUserDTO): Promise<User> {
         const {nickname, password} = product;
