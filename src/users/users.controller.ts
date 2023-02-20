@@ -12,7 +12,10 @@ import {
 
 import {ApiTags} from '@nestjs/swagger';
 
+import {PaginationDto} from '../dto/pagination.dto';
+
 import {CreateUserDTO} from './dto/create-user.dto';
+import {GetUserDTO} from './dto/get-user.dto';
 import {UserEntity} from './entities/user.entity';
 import {User} from './schemas/user.schema';
 import {UsersService} from './users.service';
@@ -23,7 +26,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get()
-    async getAll(): Promise<Array<UserEntity>> {
+    async getAll(): Promise<PaginationDto<Array<GetUserDTO>>> {
         return await this.usersService.getAll();
     }
 

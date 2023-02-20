@@ -9,12 +9,12 @@ import {ROLE} from '../../typings/enums';
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema({timestamps: true, id: true})
 export class User {
     @Prop({required: true, unique: true, maxlength: 64})
     nickname: string;
 
-    @Prop({required: true, minlength: 6, maxlength: 64})
+    @Prop({required: true, minlength: 6, maxlength: 64, select: false})
     password: string;
 
     @Prop({maxlength: 64})

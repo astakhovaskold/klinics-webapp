@@ -3,7 +3,10 @@ import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import {Model} from 'mongoose';
 
+import {PaginationDto} from '../dto/pagination.dto';
+
 import {CreateUserDTO} from './dto/create-user.dto';
+import {GetUserDTO} from './dto/get-user.dto';
 import {UserEntity} from './entities/user.entity';
 import {User, UserDocument} from './schemas/user.schema';
 
@@ -11,8 +14,14 @@ import {User, UserDocument} from './schemas/user.schema';
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async getAll(): Promise<Array<UserEntity>> {
-        return this.userModel.find().sort({nickname: 'asc'});
+    async getAll(): Promise<PaginationDto<Array<GetUserDTO>>> {
+        const size = 25;
+
+        const content = await this.userModel.find().limit(size).sort({nickname: 'asc'});
+        const total_items = await this.userModel.count();
+        const total_pages = Math.ceil(total_items / size);
+
+        return {content, total_pages, total_items};
     }
 
     async create(product: CreateUserDTO): Promise<User> {
