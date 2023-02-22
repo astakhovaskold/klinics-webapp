@@ -2,7 +2,7 @@
  * Created by ASTAKHOV A.A. on 16.02.2023
  */
 import {ApiProperty} from '@nestjs/swagger';
-import {IsEnum, IsNotEmpty, IsOptional, Matches, MaxLength, MinLength} from 'class-validator';
+import {IsEnum, IsNotEmpty, IsOptional, MaxLength, MinLength} from 'class-validator';
 
 import {ROLE} from '../../typings/enums';
 
@@ -13,10 +13,6 @@ export class UserEntity {
     readonly nickname: string;
 
     @ApiProperty()
-    @Matches(/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}/g, {
-        message:
-            'Пароль должен содержать минимум 1 цифру, 1 спецсимвол (!@#$%^&*) и 1 букву латинского алфавита в верхнем и нижнем регистре',
-    })
     @MinLength(6, {
         message: 'Слишком короткий пароль (мин. 6 символов)',
     })
