@@ -11,9 +11,14 @@ async function bootstrap() {
     app.setGlobalPrefix('/api/v1');
     app.useGlobalPipes(new ValidationPipe());
 
-    const config = new DocumentBuilder().setTitle('chameleon42 API').setVersion('1.0').build();
+    const config = new DocumentBuilder()
+        .setTitle('chameleon42 API')
+        .setVersion('1.0')
+        .addBearerAuth({type: 'http', scheme: 'bearer', bearerFormat: 'JWT'}, 'access-token')
+        .addSecurityRequirements('bearer')
+        .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('swagger', app, document);
 
     await app.listen(3000);
 }

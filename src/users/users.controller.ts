@@ -12,7 +12,7 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
+import {ApiTags} from '@nestjs/swagger';
 
 import {AccessTokenGuard} from '../auth/guards/access-token.guard';
 import {PaginationDto} from '../common/dto/pagination.dto';
@@ -29,17 +29,19 @@ import {UsersService} from './users.service';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @ApiBearerAuth()
+    @UseGuards(AccessTokenGuard)
     @Get()
     async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
         return await this.usersService.getAll();
     }
 
+    @UseGuards(AccessTokenGuard)
     @Get(':id')
     async getById(@Param('id') id: UserDocument['id']): Promise<UserDocument> {
         return await this.usersService.getById(id);
     }
 
+    @UseGuards(AccessTokenGuard)
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
     async create(@Body() user: CreateUserDto): Promise<UserDocument> {
