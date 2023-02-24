@@ -2,10 +2,11 @@ import {HttpStatus, Injectable} from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import {ServiceError} from '../common/error';
+import {ServiceError} from '../common/service.error';
 import {UserDocument} from '../users/schemas/user.schema';
 import {UsersService} from '../users/users.service';
 
+import {AccountDto} from './dto/account.dto';
 import {AuthDto} from './dto/auth.dto';
 import {TokenDto} from './dto/token.dto';
 
@@ -13,22 +14,26 @@ import {TokenDto} from './dto/token.dto';
 export class AuthService {
     constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
-    async login(data: AuthDto): Promise<TokenDto> {
+    async login(data: AuthDto): Promise<AccountDto> {
         const {username, password} = data;
 
         const user = await this.usersService.getByUsername(username);
 
         if (!user) throw new ServiceError('Пользователь не найден');
 
-        const {password: passwordToCompare} = user;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {password: passwordToCompare, refresh_token, ...profile} = user;
         const isPassEquals = await bcrypt.compare(password, passwordToCompare);
 
         if (!isPassEquals) throw new ServiceError('Неверный пароль');
 
-        const tokens = await this.getTokens(user.id, user.username);
+        const tokens = await this.getTokens(user.id);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
-        return tokens;
+        return {
+            ...tokens,
+            user: profile,
+        };
     }
 
     async refresh(userId: UserDocument['id'], refresh_token: UserDocument['refresh_token']) {
@@ -39,7 +44,7 @@ export class AuthService {
         const isRefreshTokenMatch = await bcrypt.compare(refresh_token, user.refresh_token);
         if (!isRefreshTokenMatch) throw new ServiceError('Доступ запрещён', HttpStatus.FORBIDDEN);
 
-        const tokens = await this.getTokens(user.id, user.username);
+        const tokens = await this.getTokens(user.id);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
         return tokens;
@@ -57,12 +62,11 @@ export class AuthService {
         });
     }
 
-    async getTokens(userId: UserDocument['id'], username: UserDocument['username']): Promise<TokenDto> {
+    async getTokens(sub: UserDocument['id']): Promise<TokenDto> {
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync(
                 {
-                    sub: userId,
-                    username,
+                    sub,
                 },
                 {
                     secret: process.env.JWT_ACCESS_SECRET,
@@ -71,12 +75,11 @@ export class AuthService {
             ),
             this.jwtService.signAsync(
                 {
-                    sub: userId,
-                    username,
+                    sub,
                 },
                 {
                     secret: process.env.JWT_REFRESH_SECRET,
-                    expiresIn: '7d',
+                    expiresIn: '1d',
                 },
             ),
         ]);

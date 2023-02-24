@@ -1,14 +1,14 @@
-import {BadRequestException, Body, Controller, HttpException, Post, Req, UseGuards} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Get, HttpException, Post, Req, UseGuards} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {Request} from 'express';
 
 import {Public} from '../common/decorators/public.decorator';
 
-import {ServiceError} from '../common/error';
+import {ServiceError} from '../common/service.error';
 
 import {AuthService} from './auth.service';
+import {AccountDto} from './dto/account.dto';
 import {AuthDto} from './dto/auth.dto';
-import {TokenDto} from './dto/token.dto';
 import {AccessTokenGuard} from './guards/access-token.guard';
 import {RefreshTokenGuard} from './guards/refresh-token.guard';
 
@@ -19,7 +19,7 @@ export class AuthController {
 
     @Public()
     @Post('login')
-    async login(@Body() data: AuthDto): Promise<TokenDto> {
+    async login(@Body() data: AuthDto): Promise<AccountDto> {
         try {
             return await this.authService.login(data);
         } catch (e) {
@@ -36,7 +36,7 @@ export class AuthController {
     }
 
     @UseGuards(RefreshTokenGuard)
-    @Post('refresh')
+    @Get('refresh')
     async refresh(@Req() req: Request) {
         const userId = req.user['sub'];
         const refresh_token = req.user['refresh_token'];

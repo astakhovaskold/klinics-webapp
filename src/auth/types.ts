@@ -6,5 +6,5 @@ import {UserDocument} from '../users/schemas/user.schema';
 
 export interface JwtPayload {
     sub: UserDocument['id'];
-    username: UserDocument['username'];
+    profile: UserDocument;
 }
