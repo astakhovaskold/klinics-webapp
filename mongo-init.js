@@ -18,7 +18,7 @@ db.createUser({
 db.createCollection('users', {capped: false});
 
 db.users.insertOne({
-    nickname: 'admin',
+    username: 'admin',
     password: '$2b$10$x6eE.nOHN0ULIjcDcZuD3OdQxnQSWAE.3rjsOoZ/IwbvZ7kbWF.Ie',
     role: 'ADMIN',
     is_active: true,
