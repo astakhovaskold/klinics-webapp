@@ -41,7 +41,7 @@ export class CreateUserDto {
     @IsNotEmpty({message: 'Имя не указано'})
     first_name: string;
 
-    @ApiProperty({nullable: true})
+    @ApiProperty({required: false, nullable: true})
     @MaxLength(64, {message: 'Поле "Отчество" слишком длинное (макс. 64)'})
     @IsOptional()
     middle_name?: string;

@@ -5,7 +5,7 @@ import {Model} from 'mongoose';
 
 import {PaginationDto} from '../common/dto/pagination.dto';
 
-import {ServiceError} from '../common/error';
+import {ServiceError} from '../common/service.error';
 
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';

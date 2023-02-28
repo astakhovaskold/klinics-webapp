@@ -37,6 +37,9 @@ export class User {
 
     @Prop({required: true, default: true})
     is_active: boolean;
+
+    @Prop()
+    refresh_token: string;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

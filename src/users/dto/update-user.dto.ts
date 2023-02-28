@@ -13,6 +13,10 @@ import {CreateUserDto} from './create-user.dto';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
     @ApiProperty()
     @Match(UpdateUserDto, user => user.password, {message: 'Пароли не совпадают'})
-    @IsOptional()
-    readonly confirm_password?: string;
+    @IsNotEmpty()
+    @ValidateIf(user => !!user.password)
+    confirm_password?: string;
+
+    @ApiProperty({required: false})
+    refresh_token?: string;
 }
