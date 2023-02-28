@@ -2,22 +2,26 @@ import {
     BadRequestException,
     Body,
     Controller,
-    Delete,
     Get,
+    HttpException,
     Param,
+    Patch,
     Post,
+    UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 
-import {ApiTags} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 
-import {PaginationDto} from '../dto/pagination.dto';
+import {AccessTokenGuard} from '../auth/guards/access-token.guard';
+import {PaginationDto} from '../common/dto/pagination.dto';
 
-import {CreateUserDTO} from './dto/create-user.dto';
-import {GetUserDTO} from './dto/get-user.dto';
-import {UserEntity} from './entities/user.entity';
-import {User} from './schemas/user.schema';
+import {ServiceError} from '../common/error';
+
+import {CreateUserDto} from './dto/create-user.dto';
+import {UpdateUserDto} from './dto/update-user.dto';
+import {UserDocument} from './schemas/user.schema';
 import {UsersService} from './users.service';
 
 @ApiTags('Users')
@@ -25,14 +29,20 @@ import {UsersService} from './users.service';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @ApiBearerAuth()
     @Get()
-    async getAll(): Promise<PaginationDto<Array<GetUserDTO>>> {
+    async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
         return await this.usersService.getAll();
+    }
+
+    @Get(':id')
+    async getById(@Param('id') id: UserDocument['id']): Promise<UserDocument> {
+        return await this.usersService.getById(id);
     }
 
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
-    async create(@Body() user: CreateUserDTO): Promise<User> {
+    async create(@Body() user: CreateUserDto): Promise<UserDocument> {
         try {
             return await this.usersService.create(user);
         } catch (e) {
@@ -40,8 +50,15 @@ export class UsersController {
         }
     }
 
-    @Delete(':id')
-    async remove(@Param('id') id: string): Promise<UserEntity> {
-        return this.usersService.remove(id);
+    @UseGuards(AccessTokenGuard)
+    @Patch(':id')
+    async update(@Param('id') id: UserDocument['id'], @Body() updateUserDto: UpdateUserDto): Promise<UserDocument> {
+        try {
+            return await this.usersService.update(id, updateUserDto);
+        } catch (e) {
+            if (e instanceof ServiceError) throw new HttpException(e.message, e.status);
+
+            throw new BadRequestException(e.message);
+        }
     }
 }

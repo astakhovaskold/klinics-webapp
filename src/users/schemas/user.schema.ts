@@ -5,14 +5,20 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document} from 'mongoose';
 
-import {ROLE} from '../../typings/enums';
+import {ROLE} from '../types';
 
 export type UserDocument = User & Document;
 
-@Schema({timestamps: true, id: true})
+@Schema({
+    id: true,
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+    },
+})
 export class User {
     @Prop({required: true, unique: true, maxlength: 64})
-    nickname: string;
+    username: string;
 
     @Prop({required: true, minlength: 6, maxlength: 64, select: false})
     password: string;

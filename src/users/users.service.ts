@@ -3,41 +3,56 @@ import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import {Model} from 'mongoose';
 
-import {PaginationDto} from '../dto/pagination.dto';
+import {PaginationDto} from '../common/dto/pagination.dto';
 
-import {CreateUserDTO} from './dto/create-user.dto';
-import {GetUserDTO} from './dto/get-user.dto';
-import {UserEntity} from './entities/user.entity';
+import {ServiceError} from '../common/error';
+
+import {CreateUserDto} from './dto/create-user.dto';
+import {UpdateUserDto} from './dto/update-user.dto';
 import {User, UserDocument} from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async getAll(): Promise<PaginationDto<Array<GetUserDTO>>> {
+    async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
         const size = 25;
 
-        const content = await this.userModel.find().limit(size).sort({nickname: 'asc'});
+        const content = await this.userModel.find().limit(size).sort({username: 'asc'});
         const total_items = await this.userModel.count();
         const total_pages = Math.ceil(total_items / size);
 
         return {content, total_pages, total_items};
     }
 
-    async create(product: CreateUserDTO): Promise<User> {
-        const {nickname, password} = product;
-
-        const candidate = await this.userModel.exists({nickname});
-
-        if (candidate) throw new Error('Пользователь с таким nickname уже существует');
-
-        const hash: CreateUserDTO['password'] = await bcrypt.hash(password, 10);
-
-        const created = new this.userModel({...product, password: hash});
-        return created.save();
+    async getById(id: UserDocument['id']): Promise<UserDocument> {
+        return this.userModel.findById(id);
     }
 
-    async remove(id: string): Promise<UserEntity> {
-        return this.userModel.findByIdAndUpdate(id, {is_active: false}, {new: true});
+    async getByUsername(username: UserDocument['username']): Promise<UserDocument> {
+        return this.userModel.findOne({username: username}).select('+password').exec();
+    }
+
+    async update(id: UserDocument['id'], updateUserDto: UpdateUserDto): Promise<UserDocument> {
+        const {password, ...user} = updateUserDto;
+
+        const hash = typeof password !== 'undefined' ? await bcrypt.hash(password, 10) : undefined;
+
+        Object.assign(user, hash ? {password: hash} : {});
+
+        return this.userModel.findByIdAndUpdate(id, user, {new: true}).exec();
+    }
+
+    async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+        const {username, password} = createUserDto;
+
+        const candidate = await this.userModel.exists({username});
+
+        if (candidate) throw new ServiceError('Пользователь с таким username уже существует');
+
+        const hash: CreateUserDto['password'] = await bcrypt.hash(password, 10);
+
+        const created = new this.userModel({...createUserDto, password: hash});
+        return created.save();
     }
 }
