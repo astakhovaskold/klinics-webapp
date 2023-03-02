@@ -22,7 +22,7 @@ export class AuthService {
         if (!user) throw new ServiceError('Пользователь не найден');
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {password: passwordToCompare, refresh_token, ...profile} = user;
+        const {password: passwordToCompare} = user;
         const isPassEquals = await bcrypt.compare(password, passwordToCompare);
 
         if (!isPassEquals) throw new ServiceError('Неверный пароль');
@@ -30,9 +30,12 @@ export class AuthService {
         const tokens = await this.getTokens(user.id);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
+        user.password = undefined;
+        user.refresh_token = undefined;
+
         return {
             ...tokens,
-            user: profile,
+            user,
         };
     }
 
