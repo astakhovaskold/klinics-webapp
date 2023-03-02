@@ -7,21 +7,20 @@ import {
     Param,
     Patch,
     Post,
-    UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 
 import {ApiTags} from '@nestjs/swagger';
 
-import {AccessTokenGuard} from '../auth/guards/access-token.guard';
+import {Roles} from '../common/decorators/roles.decorator';
 import {PaginationDto} from '../common/dto/pagination.dto';
-
 import {ServiceError} from '../common/service.error';
 
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {UserDocument} from './schemas/user.schema';
+import {ROLE} from './types';
 import {UsersService} from './users.service';
 
 @ApiTags('Users')
@@ -29,19 +28,19 @@ import {UsersService} from './users.service';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(ROLE.ADMIN)
     @Get()
     async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
         return await this.usersService.getAll();
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(ROLE.ADMIN)
     @Get(':id')
     async getById(@Param('id') id: UserDocument['id']): Promise<UserDocument> {
         return await this.usersService.getById(id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(ROLE.ADMIN)
     @Post()
     @UsePipes(new ValidationPipe({transform: true}))
     async create(@Body() user: CreateUserDto): Promise<UserDocument> {
@@ -52,7 +51,7 @@ export class UsersController {
         }
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(ROLE.ADMIN)
     @Patch(':id')
     async update(@Param('id') id: UserDocument['id'], @Body() updateUserDto: UpdateUserDto): Promise<UserDocument> {
         try {

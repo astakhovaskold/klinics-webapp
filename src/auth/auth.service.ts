@@ -21,13 +21,12 @@ export class AuthService {
 
         if (!user) throw new ServiceError('Пользователь не найден');
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {password: passwordToCompare} = user;
         const isPassEquals = await bcrypt.compare(password, passwordToCompare);
 
         if (!isPassEquals) throw new ServiceError('Неверный пароль');
 
-        const tokens = await this.getTokens(user.id);
+        const tokens = await this.getTokens(user.id, user);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
         user.password = undefined;
@@ -47,7 +46,7 @@ export class AuthService {
         const isRefreshTokenMatch = await bcrypt.compare(refresh_token, user.refresh_token);
         if (!isRefreshTokenMatch) throw new ServiceError('Доступ запрещён', HttpStatus.FORBIDDEN);
 
-        const tokens = await this.getTokens(user.id);
+        const tokens = await this.getTokens(user.id, user);
         await this.updateRefreshToken(user.id, tokens.refresh_token);
 
         return tokens;
@@ -65,11 +64,14 @@ export class AuthService {
         });
     }
 
-    async getTokens(sub: UserDocument['id']): Promise<TokenDto> {
+    async getTokens(sub: UserDocument['id'], user: UserDocument): Promise<TokenDto> {
+        const {role} = user;
+
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync(
                 {
                     sub,
+                    role,
                 },
                 {
                     secret: process.env.JWT_ACCESS_SECRET,
@@ -79,10 +81,11 @@ export class AuthService {
             this.jwtService.signAsync(
                 {
                     sub,
+                    role,
                 },
                 {
                     secret: process.env.JWT_REFRESH_SECRET,
-                    expiresIn: '1d',
+                    expiresIn: '30m',
                 },
             ),
         ]);
