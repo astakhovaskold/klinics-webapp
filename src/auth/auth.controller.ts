@@ -9,7 +9,6 @@ import {ServiceError} from '../common/service.error';
 import {AuthService} from './auth.service';
 import {AccountDto} from './dto/account.dto';
 import {AuthDto} from './dto/auth.dto';
-import {AccessTokenGuard} from './guards/access-token.guard';
 import {RefreshTokenGuard} from './guards/refresh-token.guard';
 
 @ApiTags('Auth')
@@ -29,7 +28,6 @@ export class AuthController {
         }
     }
 
-    @UseGuards(AccessTokenGuard)
     @Post('logout')
     async logout(@Req() req: Request) {
         await this.authService.logout(req.user['sub']);
