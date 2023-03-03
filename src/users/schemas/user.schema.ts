@@ -38,7 +38,7 @@ export class User {
     @Prop({required: true, default: true})
     is_active: boolean;
 
-    @Prop()
+    @Prop({select: false})
     refresh_token: string;
 }
 
