@@ -30,7 +30,7 @@ export class UsersService {
     }
 
     async getByUsername(username: UserDocument['username']): Promise<UserDocument> {
-        return this.userModel.findOne({username: username}).select('+password').exec();
+        return this.userModel.findOne({username: username}).select('+password +refresh_token').exec();
     }
 
     async update(id: UserDocument['id'], updateUserDto: UpdateUserDto): Promise<UserDocument> {
