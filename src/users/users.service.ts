@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
+import {Request} from 'express';
 import {Model} from 'mongoose';
 
 import {PaginationDto} from '../common/dto/pagination.dto';
@@ -33,7 +34,17 @@ export class UsersService {
         return this.userModel.findOne({username: username}).select('+password +refresh_token').exec();
     }
 
-    async update(id: UserDocument['id'], updateUserDto: UpdateUserDto): Promise<UserDocument> {
+    async update(
+        id: UserDocument['id'],
+        updateUserDto: UpdateUserDto,
+        currentUser?: Request['user'] & {sub: string},
+    ): Promise<UserDocument> {
+        const isCurrentUser = currentUser ? id === currentUser.sub : false;
+
+        if (isCurrentUser) {
+            if (updateUserDto?.is_active === false) throw new ServiceError('Невозможно деактивировать свой профиль');
+        }
+
         const {password, ...user} = updateUserDto;
 
         const hash = typeof password !== 'undefined' ? await bcrypt.hash(password, 10) : undefined;

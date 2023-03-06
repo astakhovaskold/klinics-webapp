@@ -8,7 +8,7 @@ import {AccessTokenGuard} from './auth/guards/access-token.guard';
 export class AppController {
     @UseGuards(AccessTokenGuard)
     @Get('profile')
-    async login(@Req() req: Request) {
+    async profile(@Req() req: Request) {
         return req.user;
     }
 }
