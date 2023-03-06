@@ -13,6 +13,9 @@ import {
 
 import {ApiTags} from '@nestjs/swagger';
 
+import {Request} from 'express';
+
+import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 import {PaginationDto} from '../common/dto/pagination.dto';
 import {ServiceError} from '../common/service.error';
@@ -53,9 +56,13 @@ export class UsersController {
 
     @Roles(ROLE.ADMIN)
     @Patch(':id')
-    async update(@Param('id') id: UserDocument['id'], @Body() updateUserDto: UpdateUserDto): Promise<UserDocument> {
+    async update(
+        @Param('id') id: UserDocument['id'],
+        @Body() updateUserDto: UpdateUserDto,
+        @CurrentUser() currentUser: Request['user'] & {sub: string},
+    ): Promise<UserDocument> {
         try {
-            return await this.usersService.update(id, updateUserDto);
+            return await this.usersService.update(id, updateUserDto, currentUser);
         } catch (e) {
             if (e instanceof ServiceError) throw new HttpException(e.message, e.status);
 
