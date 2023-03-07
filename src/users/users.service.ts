@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import {Request} from 'express';
-import {Model} from 'mongoose';
+import {Model, SortOrder} from 'mongoose';
 
 import {PaginationDto} from '../common/dto/pagination.dto';
 
@@ -22,14 +22,21 @@ export class UsersService {
     async getAll(query?: PaginationParams): Promise<PaginationDto<Array<UserDocument>>> {
         const {page = 0, size = 25, sort} = query;
 
-        const sortOrder = sort ? (sort.charAt(0) === '-' ? 'desc' : 'asc') : null;
-        const sortName = sort ? sort.replace('-', '') : null;
+        const arrayFromSortQuery = sort.split(',');
+        const sortArray: Array<[string, SortOrder]> = [];
 
-        const content = await this.userModel
-            .find()
-            .skip(+page)
-            .limit(+size)
-            .sort(sortName && sortOrder ? {[sortName]: sortOrder} : {});
+        if (Array.isArray(arrayFromSortQuery)) {
+            for (const item of arrayFromSortQuery) {
+                if (!item) continue;
+
+                const sortOrder: SortOrder = item.charAt(0) === '-' ? 'desc' : 'asc';
+                const sortName = item.replace('-', '');
+
+                sortArray.push([sortName, sortOrder]);
+            }
+        }
+
+        const content = await this.userModel.find().skip(+page).limit(+size).sort(sortArray);
         const total_items = await this.userModel.count();
         const total_pages = Math.ceil(total_items / size);
 

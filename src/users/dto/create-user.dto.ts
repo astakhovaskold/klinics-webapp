@@ -14,8 +14,8 @@ export class CreateUserDto {
     readonly id?: string;
 
     @ApiProperty()
-    @MaxLength(64, {message: 'Имя пользователя слишком длинное (макс. 64)'})
-    @IsNotEmpty({message: 'Имя пользователя не указано'})
+    @MaxLength(64, {message: 'Логин слишком длинный (макс. 64)'})
+    @IsNotEmpty({message: 'Логин не указан'})
     username: string;
 
     @ApiProperty()
