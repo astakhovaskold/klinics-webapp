@@ -7,6 +7,7 @@ import {
     Param,
     Patch,
     Post,
+    Query,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
@@ -20,10 +21,12 @@ import {Roles} from '../common/decorators/roles.decorator';
 import {PaginationDto} from '../common/dto/pagination.dto';
 import {ServiceError} from '../common/service.error';
 
+import {PaginationParams} from '../common/types';
+
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {UserDocument} from './schemas/user.schema';
-import {ROLE} from './types';
+import {ROLE, UserFromRequest} from './types';
 import {UsersService} from './users.service';
 
 @ApiTags('Users')
@@ -33,8 +36,8 @@ export class UsersController {
 
     @Roles(ROLE.ADMIN)
     @Get()
-    async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
-        return await this.usersService.getAll();
+    async getAll(@Query() query: PaginationParams): Promise<PaginationDto<Array<UserDocument>>> {
+        return await this.usersService.getAll(query);
     }
 
     @Roles(ROLE.ADMIN)
@@ -59,7 +62,7 @@ export class UsersController {
     async update(
         @Param('id') id: UserDocument['id'],
         @Body() updateUserDto: UpdateUserDto,
-        @CurrentUser() currentUser: Request['user'] & {sub: string},
+        @CurrentUser() currentUser: Request['user'] & UserFromRequest,
     ): Promise<UserDocument> {
         try {
             return await this.usersService.update(id, updateUserDto, currentUser);

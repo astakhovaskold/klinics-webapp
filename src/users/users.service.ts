@@ -8,18 +8,28 @@ import {PaginationDto} from '../common/dto/pagination.dto';
 
 import {ServiceError} from '../common/service.error';
 
+import {PaginationParams} from '../common/types';
+
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {User, UserDocument} from './schemas/user.schema';
+import {UserFromRequest} from './types';
 
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async getAll(): Promise<PaginationDto<Array<UserDocument>>> {
-        const size = 25;
+    async getAll(query?: PaginationParams): Promise<PaginationDto<Array<UserDocument>>> {
+        const {page = 0, size = 25, sort} = query;
 
-        const content = await this.userModel.find().limit(size).sort({username: 'asc'});
+        const sortOrder = sort ? (sort.charAt(0) === '-' ? 'desc' : 'asc') : null;
+        const sortName = sort ? sort.replace('-', '') : null;
+
+        const content = await this.userModel
+            .find()
+            .skip(+page)
+            .limit(+size)
+            .sort(sortName && sortOrder ? {[sortName]: sortOrder} : {});
         const total_items = await this.userModel.count();
         const total_pages = Math.ceil(total_items / size);
 
@@ -37,7 +47,7 @@ export class UsersService {
     async update(
         id: UserDocument['id'],
         updateUserDto: UpdateUserDto,
-        currentUser?: Request['user'] & {sub: string},
+        currentUser?: Request['user'] & UserFromRequest,
     ): Promise<UserDocument> {
         const isCurrentUser = currentUser ? id === currentUser.sub : false;
 
