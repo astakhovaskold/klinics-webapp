@@ -1,4 +1,5 @@
 import {Body, Controller, Get, Patch, Req} from '@nestjs/common';
+import {ApiTags} from '@nestjs/swagger';
 import {Request} from 'express';
 
 import {UserDocument} from '../users/schemas/user.schema';
@@ -9,6 +10,7 @@ import {PasswordResetDto} from './dto/password-reset.dto';
 
 import {ProfileService} from './profile.service';
 
+@ApiTags('Profile')
 @Controller('profile')
 export class ProfileController {
     constructor(private readonly profileService: ProfileService) {}
