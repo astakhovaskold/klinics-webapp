@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import {Request} from 'express';
 import {Model, SortOrder} from 'mongoose';
 
 import {PaginationDto} from '../common/dto/pagination.dto';
@@ -59,7 +58,7 @@ export class UsersService {
     async update(
         id: UserDocument['id'],
         updateUserDto: UpdateUserDto,
-        currentUser?: Request['user'] & UserFromRequest,
+        currentUser?: UserFromRequest,
     ): Promise<UserDocument> {
         const isCurrentUser = currentUser ? id === currentUser.sub : false;
 

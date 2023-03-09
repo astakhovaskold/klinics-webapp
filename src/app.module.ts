@@ -8,10 +8,11 @@ import {AppService} from './app.service';
 import {AuthModule} from './auth/auth.module';
 import {AccessTokenGuard} from './auth/guards/access-token.guard';
 import {RolesGuard} from './common/guards/roles.guard';
+import {ProfileModule} from './profile/profile.module';
 import {UsersModule} from './users/users.module';
 
 @Module({
-    imports: [MongooseModule.forRoot(process.env.MONGO_URL), UsersModule, AuthModule],
+    imports: [MongooseModule.forRoot(process.env.MONGO_URL), UsersModule, AuthModule, ProfileModule],
     controllers: [AppController],
     providers: [
         AppService,
