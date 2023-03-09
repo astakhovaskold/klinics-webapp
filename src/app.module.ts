@@ -11,9 +11,17 @@ import {RolesGuard} from './common/guards/roles.guard';
 import {ProfileModule} from './profile/profile.module';
 import {UsersModule} from './users/users.module';
 import {PostsModule} from './posts/posts.module';
+import {FilesModule} from './files/files.module';
 
 @Module({
-    imports: [MongooseModule.forRoot(process.env.MONGO_URL), UsersModule, AuthModule, ProfileModule, PostsModule],
+    imports: [
+        MongooseModule.forRoot(process.env.MONGO_URL),
+        UsersModule,
+        AuthModule,
+        ProfileModule,
+        PostsModule,
+        FilesModule,
+    ],
     controllers: [AppController],
     providers: [
         AppService,
