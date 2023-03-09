@@ -37,7 +37,7 @@ export class UsersService {
         const is_active = show_inactive === 'false';
 
         const content = await this.userModel
-            .find(filter ? {is_active} : {})
+            .find(Object.keys(filter).length ? {is_active} : undefined)
             .skip(+page)
             .limit(+size)
             .sort(sortArray);
