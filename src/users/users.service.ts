@@ -8,19 +8,17 @@ import {PaginationDto} from '../common/dto/pagination.dto';
 
 import {ServiceError} from '../common/service.error';
 
-import {PaginationParams} from '../common/types';
-
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {User, UserDocument} from './schemas/user.schema';
-import {UserFromRequest} from './types';
+import {UserFromRequest, UserPagination} from './types';
 
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async getAll(query?: PaginationParams): Promise<PaginationDto<Array<UserDocument>>> {
-        const {page = 0, size = 25, sort} = query;
+    async getAll(query?: UserPagination): Promise<PaginationDto<Array<UserDocument>>> {
+        const {page = 0, size = 25, sort, ...filter} = query;
 
         const arrayFromSortQuery = sort.split(',');
         const sortArray: Array<[string, SortOrder]> = [];
@@ -36,7 +34,14 @@ export class UsersService {
             }
         }
 
-        const content = await this.userModel.find().skip(+page).limit(+size).sort(sortArray);
+        const {show_inactive} = filter;
+        const is_active = show_inactive === 'false';
+
+        const content = await this.userModel
+            .find(filter ? {is_active} : {})
+            .skip(+page)
+            .limit(+size)
+            .sort(sortArray);
         const total_items = await this.userModel.count();
         const total_pages = Math.ceil(total_items / size);
 

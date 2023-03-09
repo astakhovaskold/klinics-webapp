@@ -21,12 +21,10 @@ import {Roles} from '../common/decorators/roles.decorator';
 import {PaginationDto} from '../common/dto/pagination.dto';
 import {ServiceError} from '../common/service.error';
 
-import {PaginationParams} from '../common/types';
-
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {UserDocument} from './schemas/user.schema';
-import {ROLE, UserFromRequest} from './types';
+import {ROLE, UserFromRequest, UserPagination} from './types';
 import {UsersService} from './users.service';
 
 @ApiTags('Users')
@@ -36,7 +34,7 @@ export class UsersController {
 
     @Roles(ROLE.ADMIN)
     @Get()
-    async getAll(@Query() query: PaginationParams): Promise<PaginationDto<Array<UserDocument>>> {
+    async getAll(@Query() query: UserPagination): Promise<PaginationDto<Array<UserDocument>>> {
         return await this.usersService.getAll(query);
     }
 
