@@ -14,8 +14,6 @@ import {
 
 import {ApiTags} from '@nestjs/swagger';
 
-import {Request} from 'express';
-
 import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 import {PaginationDto} from '../common/dto/pagination.dto';
@@ -60,7 +58,7 @@ export class UsersController {
     async update(
         @Param('id') id: UserDocument['id'],
         @Body() updateUserDto: UpdateUserDto,
-        @CurrentUser() currentUser: Request['user'] & UserFromRequest,
+        @CurrentUser() currentUser: UserFromRequest,
     ): Promise<UserDocument> {
         try {
             return await this.usersService.update(id, updateUserDto, currentUser);

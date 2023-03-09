@@ -1,8 +1,8 @@
 /**
  * Created by ASTAKHOV A.A. on 16.02.2023
  */
-import {UserDocument} from './schemas/user.schema';
-import {PaginationParams} from "../common/types";
+
+import {PaginationParams} from '../common/types';
 
 export enum ROLE {
     ADMIN = 'ADMIN',
@@ -11,7 +11,8 @@ export enum ROLE {
 }
 
 export interface UserFromRequest {
-    sub: UserDocument['id'];
+    sub: string;
+    role: ROLE;
     iat: Date;
     exp: Date;
 }
