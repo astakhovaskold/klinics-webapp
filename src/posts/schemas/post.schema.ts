@@ -21,7 +21,7 @@ export class Post {
     @Prop({required: true})
     title: string;
 
-    @Prop({required: true})
+    @Prop()
     description: string;
 
     @Prop({required: true, enum: POST_TYPES})
@@ -30,7 +30,7 @@ export class Post {
     @Prop({required: true})
     priority: number;
 
-    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'User'})
+    @Prop({required: true, type: MongooseSchema.Types.ObjectId, ref: 'User'})
     author: User;
 
     @Prop({required: true, default: true})
