@@ -39,7 +39,15 @@
             1
         ],
         "@typescript-eslint/naming-convention": [
-            1
+            "warn",
+            {
+                "selector": "variable",
+                "format": ["camelCase", "UPPER_CASE", "snake_case", "PascalCase"]
+            },
+            {
+                "selector": "property",
+                "format": ["camelCase", "snake_case"]
+            }
         ],
         "@typescript-eslint/no-unused-vars": [
             2
@@ -139,6 +147,13 @@
     "settings": {
         "react": {
             "version": "detect"
+        },
+        "import/resolver": {
+            "node": {
+                "project": "./tsconfig.json",
+                "extensions": [".ts", ".tsx"],
+                "moduleDirectory": ["src", "node_modules"]
+            }
         }
     }
 }
