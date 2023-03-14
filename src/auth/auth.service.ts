@@ -38,7 +38,7 @@ export class AuthService {
         };
     }
 
-    async refresh(userId: UserDocument['id'], refresh_token: UserDocument['refresh_token']) {
+    async refresh(userId: UserDocument['id'], refresh_token: UserDocument['refresh_token']): Promise<TokenDto> {
         const user = await this.usersService.getById(userId);
 
         if (!user || !user.refresh_token) throw new ServiceError('Доступ запрещён', HttpStatus.FORBIDDEN);
@@ -56,7 +56,7 @@ export class AuthService {
         return this.usersService.update(userId, {refresh_token: null});
     }
 
-    async updateRefreshToken(userId: UserDocument['id'], refresh_token: UserDocument['refresh_token']) {
+    async updateRefreshToken(userId: UserDocument['id'], refresh_token: UserDocument['refresh_token']): Promise<void> {
         const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
 
         await this.usersService.update(userId, {
