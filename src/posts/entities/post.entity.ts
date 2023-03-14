@@ -23,7 +23,7 @@ export class PostEntity {
 
     @ApiProperty()
     @Transform(({value}: TransformFnParams) => value?.trim().replace(textWhitespaceRegexp, ' '))
-    @MaxLength(1024, {message: 'Поле "Описание" слишком длинное (макс. 1024)'})
+    @MaxLength(3072, {message: 'Поле "Описание" слишком длинное (макс. 3072)'})
     description: string;
 
     @ApiProperty({nullable: false, enum: POST_TYPES})

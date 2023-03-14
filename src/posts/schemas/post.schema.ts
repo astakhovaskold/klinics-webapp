@@ -18,10 +18,10 @@ export type PostDocument = Post & Document;
     },
 })
 export class Post {
-    @Prop({required: true})
+    @Prop({required: true, type: 'string', maxlength: 128})
     title: string;
 
-    @Prop()
+    @Prop({type: 'string', maxlength: 3072})
     description: string;
 
     @Prop({required: true, enum: POST_TYPES})

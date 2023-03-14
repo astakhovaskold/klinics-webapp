@@ -10,6 +10,7 @@ import {UserFromRequest} from '../users/types';
 
 import {CreatePostDto} from './dto/create-post.dto';
 
+import {UpdatePostDto} from './dto/update-post.dto';
 import {Post, PostDocument} from './schemas/post.schema';
 
 @Injectable()
@@ -40,8 +41,8 @@ export class PostsService {
         return `This action returns a #${id} post`;
     }
 
-    update(id: string) {
-        return `This action updates a #${id} post`;
+    update(id: string, updatePostDto: UpdatePostDto) {
+        return `This action updates a #${id} post as ${JSON.stringify(updatePostDto)}`;
     }
 
     remove(id: string) {
