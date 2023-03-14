@@ -35,6 +35,9 @@ export class Post {
 
     @Prop({required: true, default: true})
     is_active: boolean;
+
+    @Prop()
+    preview: string;
 }
 
 export const postSchema = SchemaFactory.createForClass(Post);
