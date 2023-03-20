@@ -8,7 +8,7 @@ import {AppService} from './app.service';
 import {AuthModule} from './auth/auth.module';
 import {AccessTokenGuard} from './auth/guards/access-token.guard';
 import {RolesGuard} from './common/guards/roles.guard';
-import {FilesModule} from './files/files.module';
+import {MediaModule} from './media/media.module';
 import {PostsModule} from './posts/posts.module';
 import {ProfileModule} from './profile/profile.module';
 import {UsersModule} from './users/users.module';
@@ -20,7 +20,7 @@ import {UsersModule} from './users/users.module';
         AuthModule,
         ProfileModule,
         PostsModule,
-        FilesModule,
+        MediaModule,
     ],
     controllers: [AppController],
     providers: [

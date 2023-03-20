@@ -5,6 +5,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Schema as MongooseSchema} from 'mongoose';
 
+import {Media} from '../../media/schemas/media.schema';
 import {User} from '../../users/schemas/user.schema';
 import {POST_TYPES} from '../types';
 
@@ -36,8 +37,8 @@ export class Post {
     @Prop({required: true, default: true})
     is_active: boolean;
 
-    @Prop()
-    preview: string;
+    @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Media'})
+    thumbnail: Media;
 }
 
 export const postSchema = SchemaFactory.createForClass(Post);
