@@ -31,12 +31,12 @@ export class PostEntity {
     @IsNotEmpty({message: 'Тип не указан'})
     type: POST_TYPES;
 
-    @ApiProperty()
+    @ApiProperty({required: true})
     priority: number;
 
-    @ApiProperty({type: 'string', nullable: false})
+    @ApiProperty({required: true, type: 'string', nullable: false})
     author: UserEntity['id'];
 
     @ApiProperty({type: 'string', format: 'binary', nullable: true})
-    preview: string;
+    thumbnail: string;
 }

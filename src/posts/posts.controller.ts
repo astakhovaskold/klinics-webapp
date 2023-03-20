@@ -22,6 +22,8 @@ import {ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
 
 import {ApiImplicitFile} from '@nestjs/swagger/dist/decorators/api-implicit-file.decorator';
 
+import {Express} from 'express';
+
 import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 
@@ -68,11 +70,11 @@ export class PostsController {
                 ],
             }),
         )
-        preview,
+        thumbnail: Express.Multer.File,
         @CurrentUser() currentUser: ProfileDto,
     ): Promise<PostDocument> {
         try {
-            return await this.postsService.create(createPostDto, preview, currentUser);
+            return await this.postsService.create(createPostDto, thumbnail, currentUser);
         } catch (e) {
             if (e instanceof ServiceError) throw new HttpException(e.message, e.status);
 
