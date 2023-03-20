@@ -4,9 +4,9 @@
 
 import {createParamDecorator, ExecutionContext} from '@nestjs/common';
 
-import {UserFromRequest} from '../../users/types';
+import {ProfileDto} from '../../users/dto/profile.dto';
 
-export const CurrentUser = createParamDecorator((data: unknown, ctx: ExecutionContext): UserFromRequest => {
+export const CurrentUser = createParamDecorator((data: unknown, ctx: ExecutionContext): ProfileDto => {
     const request = ctx.switchToHttp().getRequest();
 
     return request.user;

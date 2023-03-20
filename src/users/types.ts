@@ -10,13 +10,6 @@ export enum ROLE {
     HR = 'HR',
 }
 
-export interface UserFromRequest {
-    sub: string;
-    role: ROLE;
-    iat: Date;
-    exp: Date;
-}
-
 export interface UserPagination extends PaginationParams {
     show_inactive: string;
 }
