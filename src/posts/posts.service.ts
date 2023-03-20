@@ -6,7 +6,7 @@ import {Model} from 'mongoose';
 
 import {ServiceError} from '../common/service.error';
 
-import {UserFromRequest} from '../users/types';
+import {ProfileDto} from '../users/dto/profile.dto';
 
 import {CreatePostDto} from './dto/create-post.dto';
 
@@ -17,19 +17,21 @@ import {Post, PostDocument} from './schemas/post.schema';
 export class PostsService {
     constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
-    async create(createPostDto: CreatePostDto, currentUser: UserFromRequest): Promise<PostDocument> {
+    async create(createPostDto: CreatePostDto, previewData, currentUser: ProfileDto): Promise<PostDocument> {
         const author = currentUser?.sub;
 
         if (!author) throw new ServiceError('Автор не определён');
 
         const {priority: priorityFromDto} = createPostDto;
 
+        const preview = previewData ? previewData.buffer.toString() : null;
+
         const maxPriorityPost = await this.postModel.findOne().sort({priority: 'desc'}).limit(1);
         const priorityIncrement = maxPriorityPost ? maxPriorityPost.priority + 1 : 1;
 
         const priority = Number.isFinite(priorityFromDto) ? priorityFromDto : priorityIncrement;
 
-        const created = new this.postModel({...createPostDto, priority, author});
+        const created = new this.postModel({...createPostDto, priority, author, preview});
         return created.save();
     }
 

@@ -10,18 +10,28 @@ import {
     BadRequestException,
     UsePipes,
     ValidationPipe,
+    UseInterceptors,
+    UploadedFile,
+    ParseFilePipe,
+    MaxFileSizeValidator,
+    FileTypeValidator,
 } from '@nestjs/common';
 
-import {ApiTags} from '@nestjs/swagger';
+import {FileInterceptor} from '@nestjs/platform-express';
+import {ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
+
+import {ApiImplicitFile} from '@nestjs/swagger/dist/decorators/api-implicit-file.decorator';
 
 import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 
 import {ServiceError} from '../common/service.error';
-import {ROLE, UserFromRequest} from '../users/types';
+import {ProfileDto} from '../users/dto/profile.dto';
+import {ROLE} from '../users/types';
 
 import {CreatePostDto} from './dto/create-post.dto';
 import {UpdatePostDto} from './dto/update-post.dto';
+import {PostEntity} from './entities/post.entity';
 import {PostsService} from './posts.service';
 
 import {PostDocument} from './schemas/post.schema';
@@ -41,15 +51,28 @@ export class PostsController {
         return this.postsService.getById(id);
     }
 
-    @Roles(ROLE.MODERATOR)
+    @ApiConsumes('multipart/form-data')
+    @ApiImplicitFile({name: 'preview'})
+    @ApiResponse({type: PostEntity})
     @UsePipes(new ValidationPipe({transform: true}))
+    @UseInterceptors(FileInterceptor('preview'))
+    @Roles(ROLE.MODERATOR)
     @Post()
     async create(
         @Body() createPostDto: CreatePostDto,
-        @CurrentUser() currentUser: UserFromRequest,
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({maxSize: 16 * 1024 * 1024}),
+                    new FileTypeValidator({fileType: /image\/(jpg|jpeg|png|webp|gif)$|video\/(mp4|webm)$/}),
+                ],
+            }),
+        )
+        preview,
+        @CurrentUser() currentUser: ProfileDto,
     ): Promise<PostDocument> {
         try {
-            return await this.postsService.create(createPostDto, currentUser);
+            return await this.postsService.create(createPostDto, preview, currentUser);
         } catch (e) {
             if (e instanceof ServiceError) throw new HttpException(e.message, e.status);
 

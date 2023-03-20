@@ -34,12 +34,9 @@ export class PostEntity {
     @ApiProperty()
     priority: number;
 
-    @ApiProperty({nullable: false})
+    @ApiProperty({type: 'string', nullable: false})
     author: UserEntity['id'];
 
-    @ApiProperty()
-    files: [];
-
-    @ApiProperty()
+    @ApiProperty({type: 'string', format: 'binary', nullable: true})
     preview: string;
 }
