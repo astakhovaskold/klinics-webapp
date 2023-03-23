@@ -1,7 +1,9 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {Transform, TransformFnParams} from 'class-transformer';
 
-import {IsEnum, IsNotEmpty, MaxLength} from 'class-validator';
+import {IsEnum, IsNotEmpty, IsOptional, MaxLength} from 'class-validator';
+
+import {Express} from 'express';
 
 import {UserEntity} from '../../users/entities/user.entity';
 import {POST_TYPES} from '../types';
@@ -21,22 +23,40 @@ export class PostEntity {
     @IsNotEmpty({message: 'Название не указано'})
     title: string;
 
-    @ApiProperty()
+    @ApiProperty({required: false})
     @Transform(({value}: TransformFnParams) => value?.trim().replace(textWhitespaceRegexp, ' '))
     @MaxLength(3072, {message: 'Поле "Описание" слишком длинное (макс. 3072)'})
-    description: string;
+    @IsOptional()
+    description?: string;
 
     @ApiProperty({nullable: false, enum: POST_TYPES})
     @IsEnum(POST_TYPES, {message: 'Указанный тип записи не найден'})
     @IsNotEmpty({message: 'Тип не указан'})
     type: POST_TYPES;
 
-    @ApiProperty({required: true})
+    @ApiProperty({required: false})
     priority: number;
 
-    @ApiProperty({required: true, type: 'string', nullable: false})
+    @ApiProperty({required: false, type: 'string', nullable: false})
     author: UserEntity['id'];
 
-    @ApiProperty({type: 'string', format: 'binary', nullable: true})
-    thumbnail: string;
+    @ApiProperty({
+        type: 'array',
+        items: {
+            type: 'string',
+            format: 'binary',
+        },
+        nullable: true,
+    })
+    thumbnail: Array<Express.Multer.File>;
+
+    @ApiProperty({
+        type: 'array',
+        items: {
+            type: 'string',
+            format: 'binary',
+        },
+        nullable: true,
+    })
+    media: Array<Express.Multer.File>;
 }

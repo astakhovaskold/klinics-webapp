@@ -2,7 +2,6 @@ import {Injectable} from '@nestjs/common';
 
 import {InjectModel} from '@nestjs/mongoose';
 
-import {Express} from 'express';
 import {Model} from 'mongoose';
 
 import {ServiceError} from '../common/service.error';
@@ -10,6 +9,7 @@ import {ServiceError} from '../common/service.error';
 import {MediaService} from '../media/media.service';
 import {ProfileDto} from '../users/dto/profile.dto';
 
+import {CreatePostFilesDto} from './dto/create-post-files.dto';
 import {CreatePostDto} from './dto/create-post.dto';
 
 import {UpdatePostDto} from './dto/update-post.dto';
@@ -21,18 +21,22 @@ export class PostsService {
 
     async create(
         createPostDto: CreatePostDto,
-        thumbnailData: Express.Multer.File,
+        files: CreatePostFilesDto,
         currentUser: ProfileDto,
     ): Promise<PostDocument> {
         const author = currentUser?.sub;
 
         if (!author) throw new ServiceError('Автор не определён');
 
-        const thumbnail = await this.filesService.create(thumbnailData);
+        const {thumbnail: thumbnailData, media: mediaData} = files;
+
+        const thumbnail = await this.filesService.create(thumbnailData[0]);
+
+        const media = await Promise.all(mediaData.map(item => this.filesService.create(item)));
 
         const priority = await this.getPostPriority(createPostDto);
 
-        const created = new this.postModel({...createPostDto, priority, author, preview: thumbnail.id});
+        const created = new this.postModel({...createPostDto, priority, author, thumbnail: thumbnail.id, media});
         return created.save();
     }
 
