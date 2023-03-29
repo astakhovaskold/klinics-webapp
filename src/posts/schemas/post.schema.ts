@@ -39,6 +39,9 @@ export class Post {
 
     @Prop({type: MongooseSchema.Types.ObjectId, ref: 'Media'})
     thumbnail: Media;
+
+    @Prop({type: [MongooseSchema.Types.ObjectId], ref: 'Media'})
+    media: Array<Media>;
 }
 
 export const postSchema = SchemaFactory.createForClass(Post);

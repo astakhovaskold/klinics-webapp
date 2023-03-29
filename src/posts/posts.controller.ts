@@ -11,32 +11,29 @@ import {
     UsePipes,
     ValidationPipe,
     UseInterceptors,
-    UploadedFile,
-    ParseFilePipe,
-    MaxFileSizeValidator,
-    FileTypeValidator,
+    UploadedFiles,
 } from '@nestjs/common';
 
-import {FileInterceptor} from '@nestjs/platform-express';
+import {FileFieldsInterceptor} from '@nestjs/platform-express';
 import {ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
-
-import {ApiImplicitFile} from '@nestjs/swagger/dist/decorators/api-implicit-file.decorator';
-
-import {Express} from 'express';
 
 import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 
+import {ValidateFileSizePipe} from '../common/pipes/validate-file-size.pipe';
+import {ValidateFileTypePipe} from '../common/pipes/validate-file-type.pipe';
 import {ServiceError} from '../common/service.error';
 import {ProfileDto} from '../users/dto/profile.dto';
 import {ROLE} from '../users/types';
 
+import {CreatePostFilesDto} from './dto/create-post-files.dto';
 import {CreatePostDto} from './dto/create-post.dto';
 import {UpdatePostDto} from './dto/update-post.dto';
 import {PostEntity} from './entities/post.entity';
 import {PostsService} from './posts.service';
 
 import {PostDocument} from './schemas/post.schema';
+import {PostFileList} from './types';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -54,27 +51,24 @@ export class PostsController {
     }
 
     @ApiConsumes('multipart/form-data')
-    @ApiImplicitFile({name: 'preview'})
     @ApiResponse({type: PostEntity})
     @UsePipes(new ValidationPipe({transform: true}))
-    @UseInterceptors(FileInterceptor('preview'))
+    @UseInterceptors(
+        FileFieldsInterceptor([
+            {name: 'thumbnail', maxCount: 1},
+            {name: 'media', maxCount: 15},
+        ]),
+    )
     @Roles(ROLE.MODERATOR)
     @Post()
     async create(
         @Body() createPostDto: CreatePostDto,
-        @UploadedFile(
-            new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({maxSize: 16 * 1024 * 1024}),
-                    new FileTypeValidator({fileType: /image\/(jpg|jpeg|png|webp|gif)$|video\/(mp4|webm)$/}),
-                ],
-            }),
-        )
-        thumbnail: Express.Multer.File,
+        @UploadedFiles(new ValidateFileSizePipe<CreatePostFilesDto>(), new ValidateFileTypePipe<CreatePostFilesDto>())
+        files: CreatePostFilesDto,
         @CurrentUser() currentUser: ProfileDto,
     ): Promise<PostDocument> {
         try {
-            return await this.postsService.create(createPostDto, thumbnail, currentUser);
+            return await this.postsService.create(createPostDto, files, currentUser);
         } catch (e) {
             if (e instanceof ServiceError) throw new HttpException(e.message, e.status);
 
