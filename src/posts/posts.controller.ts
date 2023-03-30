@@ -12,6 +12,7 @@ import {
     ValidationPipe,
     UseInterceptors,
     UploadedFiles,
+    Query,
 } from '@nestjs/common';
 
 import {FileFieldsInterceptor} from '@nestjs/platform-express';
@@ -20,10 +21,12 @@ import {ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {CurrentUser} from '../common/decorators/current-user.decorator';
 import {Roles} from '../common/decorators/roles.decorator';
 
+import {PaginationDto} from '../common/dto/pagination.dto';
 import {ValidateFileSizePipe} from '../common/pipes/validate-file-size.pipe';
 import {ValidateFileTypePipe} from '../common/pipes/validate-file-type.pipe';
 import {ServiceError} from '../common/service.error';
 import {ProfileDto} from '../users/dto/profile.dto';
+import {UserDocument} from '../users/schemas/user.schema';
 import {ROLE} from '../users/types';
 
 import {CreatePostFilesDto} from './dto/create-post-files.dto';
@@ -33,7 +36,7 @@ import {PostEntity} from './entities/post.entity';
 import {PostsService} from './posts.service';
 
 import {PostDocument} from './schemas/post.schema';
-import {PostFileList} from './types';
+import {PostFileList, PostPagination} from './types';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -41,8 +44,8 @@ export class PostsController {
     constructor(private readonly postsService: PostsService) {}
 
     @Get()
-    findAll() {
-        return this.postsService.getAll();
+    findAll(@Query() query: PostPagination): Promise<PaginationDto<Array<PostDocument>>> {
+        return this.postsService.getAll(query);
     }
 
     @Get(':id')

@@ -3,6 +3,8 @@
  */
 import {Express} from 'express';
 
+import {PaginationParams} from '../common/types';
+
 export enum POST_TYPES {
     REALISTIC_3D = 'Realistic 3D',
     STYLIZED_3D = 'Stylized 3D',
@@ -15,4 +17,8 @@ export enum POST_TYPES {
 export interface PostFileList {
     thumbnail: Express.Multer.File;
     media: Array<Express.Multer.File>;
+}
+
+export interface PostPagination extends PaginationParams {
+    show_inactive: string;
 }
