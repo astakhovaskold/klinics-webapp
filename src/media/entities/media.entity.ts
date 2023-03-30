@@ -2,6 +2,8 @@
  * Created by ASTAKHOV A.A. on 09.03.2023
  */
 
+import {Buffer} from 'buffer';
+
 import {ApiProperty} from '@nestjs/swagger';
 
 export class MediaEntity {
@@ -15,7 +17,7 @@ export class MediaEntity {
     filename: string;
 
     @ApiProperty({required: true, nullable: false})
-    buffer: string;
+    buffer: Buffer;
 
     @ApiProperty({nullable: false})
     content_type: string;

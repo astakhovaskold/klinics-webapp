@@ -2,8 +2,9 @@ import {Injectable} from '@nestjs/common';
 
 import {InjectModel} from '@nestjs/mongoose';
 
-import {Model} from 'mongoose';
+import {Model, SortOrder} from 'mongoose';
 
+import {PaginationDto} from '../common/dto/pagination.dto';
 import {ServiceError} from '../common/service.error';
 
 import {MediaService} from '../media/media.service';
@@ -14,6 +15,7 @@ import {CreatePostDto} from './dto/create-post.dto';
 
 import {UpdatePostDto} from './dto/update-post.dto';
 import {Post, PostDocument} from './schemas/post.schema';
+import {PostPagination} from './types';
 
 @Injectable()
 export class PostsService {
@@ -40,8 +42,37 @@ export class PostsService {
         return created.save();
     }
 
-    getAll() {
-        return `This action returns all posts`;
+    async getAll(query?: PostPagination): Promise<PaginationDto<Array<PostDocument>>> {
+        const {page = 0, size = 25, sort, ...filter} = query;
+
+        const arrayFromSortQuery = sort ? sort.split(',') : null;
+        const sortArray: Array<[string, SortOrder]> = [];
+
+        if (Array.isArray(arrayFromSortQuery)) {
+            for (const item of arrayFromSortQuery) {
+                if (!item) continue;
+
+                const sortOrder: SortOrder = item.charAt(0) === '-' ? 'desc' : 'asc';
+                const sortName = item.replace('-', '');
+
+                sortArray.push([sortName, sortOrder]);
+            }
+        }
+
+        const {show_inactive} = filter;
+        const is_active = show_inactive === 'false';
+
+        const content = await this.postModel
+            .find(Object.keys(filter).length ? {is_active} : undefined)
+            .populate(['thumbnail', 'media'])
+            .skip(+page)
+            .limit(+size)
+            .sort(sortArray);
+
+        const total_items = await this.postModel.count();
+        const total_pages = Math.ceil(total_items / size);
+
+        return {content, total_pages, total_items};
     }
 
     getById(id: string) {

@@ -19,8 +19,8 @@ export class PostEntity {
 
     @ApiProperty()
     @Transform(({value}: TransformFnParams) => value?.trim().replace(textWhitespaceRegexp, ' '))
-    @MaxLength(128, {message: 'Поле "Название" слишком длинное (макс. 128)'})
-    @IsNotEmpty({message: 'Название не указано'})
+    @MaxLength(128, {message: 'Поле "Наименование" слишком длинное (макс. 128)'})
+    @IsNotEmpty({message: 'Наименование не указано'})
     title: string;
 
     @ApiProperty({required: false})
