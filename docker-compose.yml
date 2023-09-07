@@ -1,9 +1,9 @@
 version: '3.9'
 
 services:
-  mongodb:
+  mongo:
     image: mongo:5.0.0
-    container_name: ch42-mongodb
+    container_name: ch42-mongo
     networks:
       - ch42-network
     ports:
@@ -18,24 +18,24 @@ services:
       retries: 3
     restart: always
 
-  prod:
-    container_name: ch42-prod
-    build: .
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - 80:3000
-    networks:
-      - ch42-network
-    command:
-      - pnpm run build
-      - pnpm run start:prod
-    env_file:
-      - .env.production
-    restart: unless-stopped
-    depends_on:
-      - mongodb
+#  prod:
+#    container_name: ch42-prod
+#    build: .
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
+#    ports:
+#      - 80:3000
+#    networks:
+#      - ch42-network
+#    command:
+#      - pnpm run build
+#      - pnpm run start:prod
+#    env_file:
+#      - .env.production
+#    restart: unless-stopped
+#    depends_on:
+#      - mongodb
 
   dev:
     container_name: ch42-dev
@@ -52,7 +52,7 @@ services:
       - .env.development
     restart: unless-stopped
     depends_on:
-      - mongodb
+      - mongo
 
 networks:
   ch42-network:
