@@ -3,9 +3,9 @@ version: '3.9'
 services:
   mongo:
     image: mongo:5.0.0
-    container_name: ch42-mongo
+    container_name: mdc-mongo
     networks:
-      - ch42-network
+      - mdc-network
     ports:
       - 27017:27017
     volumes:
@@ -18,43 +18,32 @@ services:
       retries: 3
     restart: always
 
-#  prod:
-#    container_name: ch42-prod
-#    build: .
-#    volumes:
-#      - .:/app
-#      - /app/node_modules
-#    ports:
-#      - 80:3000
-#    networks:
-#      - ch42-network
-#    command:
-#      - pnpm run build
-#      - pnpm run start:prod
-#    env_file:
-#      - .env.production
-#    restart: unless-stopped
-#    depends_on:
-#      - mongodb
-
-  dev:
-    container_name: ch42-dev
-    build: .
+  api:
+    image: astakhovaskold/mdc-webapp
+    container_name: mdc-webapp
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # ✨ Target the dev stage
+      target: dev
+    # Mount host directory to docker container to support watch mode
     volumes:
       - .:/app
+      # This ensures that the NestJS container manages the node_modules folder
+      # rather than synchronizes it with the host machine
       - /app/node_modules
+    env_file:
+      - .env.development
     ports:
       - 3000:3000
     networks:
-      - ch42-network
-    command: pnpm run start:dev
-    env_file:
-      - .env.development
-    restart: unless-stopped
+      - mdc-network
     depends_on:
       - mongo
+    command: npx nest start --watch
 
 networks:
-  ch42-network:
+  mdc-network:
 volumes:
   mongodb_data_container:
