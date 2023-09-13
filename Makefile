@@ -1,11 +1,11 @@
 build:
-	- docker build -t astakhovaskold/mdc-webapp -f Dockerfile .
+	- docker build -t astakhovaskold/klinics-webapp -f Dockerfile .
 
 run:
-	- docker run -p 3000:3000 --name=mdc-webapp_prod --network=ch42-webapp_mdc-network --env-file .env.production -d astakhovaskold/mdc-webapp
+	- docker run -p 3000:3000 --name=klinics-webapp_prod --network=klinics-webapp_klinics-network --env-file .env.production -d astakhovaskold/klinics-webapp
 
 rm:
-	- docker rm -f mdc-webapp_prod
+	- docker rm -f klinics-webapp_prod
 
 rebuild:
 	- make rm && make build && make run
@@ -30,11 +30,11 @@ drone-runner:
 	- docker run --detach \
         --volume=/var/run/docker.sock:/var/run/docker.sock \
         --env=DRONE_RPC_PROTO=http \
-        --env=DRONE_RPC_HOST=localhost \
+        --env=DRONE_RPC_HOST=localhost:8888 \
         --env=DRONE_RPC_SECRET=115cbc88b04ae6f6f9d61a16a1cc64c9 \
         --env=DRONE_RUNNER_CAPACITY=2 \
         --env=DRONE_RUNNER_NAME=drone-runner \
-        --publish=8880:3000 \
+        --publish=3000:3000 \
         --restart=always \
         --name=runner \
         drone/drone-runner-docker:1

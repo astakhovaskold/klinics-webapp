@@ -2,7 +2,7 @@
  * Created by ASTAKHOV A.A. on 15.02.2023
  */
 
-db = new Mongo().getDB('medicindb');
+db = new Mongo().getDB('klinicsdb');
 
 db.createUser({
     user: 'askold_astakhov',
@@ -10,7 +10,7 @@ db.createUser({
     roles: [
         {
             role: 'readWrite',
-            db: 'medicindb',
+            db: 'klinicsdb',
         },
     ],
 });

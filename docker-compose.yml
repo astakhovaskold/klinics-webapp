@@ -3,9 +3,9 @@ version: '3.9'
 services:
   mongo:
     image: mongo:5.0.0
-    container_name: mdc-mongo
+    container_name: klinics-mongo
     networks:
-      - mdc-network
+      - klinics-network
     ports:
       - 27017:27017
     volumes:
@@ -19,7 +19,7 @@ services:
     restart: always
 
 #  prod:
-#    container_name: mdc-prod
+#    container_name: klinics-prod
 #    build: .
 #    volumes:
 #      - .:/app
@@ -27,7 +27,7 @@ services:
 #    ports:
 #      - 80:3000
 #    networks:
-#      - mdc-network
+#      - klinics-network
 #    command:
 #      - pnpm run build
 #      - pnpm run start:prod
@@ -38,7 +38,7 @@ services:
 #      - mongodb
 
   dev:
-    container_name: mdc-dev
+    container_name: klinics-dev
     build:
       dockerfile: ./DockerfileDev
     volumes:
@@ -47,7 +47,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      - mdc-network
+      - klinics-network
     env_file:
       - .env.development
     restart: unless-stopped
@@ -55,6 +55,6 @@ services:
       - mongo
 
 networks:
-  mdc-network:
+  klinics-network:
 volumes:
   mongodb_data_container:
