@@ -6,6 +6,7 @@
 # Node artifact files
 node_modules/
 dist/
+.pnpm-store/
 
 # Compiled Java class files
 *.class
@@ -48,3 +49,4 @@ Thumbs.db
 *.mov
 *.wmv
 
+secret.txt

@@ -26,7 +26,6 @@ import {ValidateFileSizePipe} from '../common/pipes/validate-file-size.pipe';
 import {ValidateFileTypePipe} from '../common/pipes/validate-file-type.pipe';
 import {ServiceError} from '../common/service.error';
 import {ProfileDto} from '../users/dto/profile.dto';
-import {UserDocument} from '../users/schemas/user.schema';
 import {ROLE} from '../users/types';
 
 import {CreatePostFilesDto} from './dto/create-post-files.dto';
@@ -36,7 +35,7 @@ import {PostEntity} from './entities/post.entity';
 import {PostsService} from './posts.service';
 
 import {PostDocument} from './schemas/post.schema';
-import {PostFileList, PostPagination} from './types';
+import {PostPagination} from './types';
 
 @ApiTags('Posts')
 @Controller('posts')

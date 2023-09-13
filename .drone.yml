@@ -57,41 +57,10 @@ steps:
     depends_on:
     - lint
 
-  - name: build
-    image: node:18.14.0-alpine
-    commands:
-      - npm i -g pnpm@7.27.0
-      - pnpm build
-    when:
-      branch:
-        include:
-          - develop
-          - release/*
-    depends_on:
-      - install
-
-  - name: rebuild-cache
-    image: drillster/drone-volume-cache
-    settings:
-      rebuild: true
-      mount:
-        - ./node_modules
-    volumes:
-      - name: cache
-        path: /cache
-    when:
-      branch:
-        - develop
-    depends_on:
-      - build
-
   - name: publish
     image: plugins/docker
     settings:
-      repo: astakhovaskold/mdc-webapp
-      target: mdc-webapp
-      auto_tag: false
-      auto_tag_suffix: ${DRONE_COMMIT_BRANCH//\//-}
+      repo: astakhovaskold/klinics-webapp
       force_tag: true
       username:
         from_secret: DOCKER_USERNAME
@@ -99,14 +68,16 @@ steps:
         from_secret: DOCKER_PASSWORD
       tags:
         - ${DRONE_COMMIT_BRANCH//\//-}
+      platform:
+        - linux/amd64
     when:
       branch:
         include:
         - develop
         - master
     depends_on:
-    - lint
-
+      - lint
+  
   - name: notification
     image: appleboy/drone-telegram
     settings:

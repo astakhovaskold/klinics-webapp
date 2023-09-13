@@ -2,14 +2,10 @@
  * Created by ASTAKHOV A.A. on 16.02.2023
  */
 
-import {ClassConstructor} from 'class-transformer';
-import {
-    registerDecorator,
-    ValidationArguments,
-    ValidationOptions,
-    ValidatorConstraint,
-    ValidatorConstraintInterface,
-} from 'class-validator';
+import type {ClassConstructor} from 'class-transformer';
+import {registerDecorator, ValidatorConstraint} from 'class-validator';
+
+import type {ValidationArguments, ValidationOptions, ValidatorConstraintInterface} from 'class-validator';
 
 export const Match = <T>(
     type: ClassConstructor<T>,
