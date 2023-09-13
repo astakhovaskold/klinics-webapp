@@ -18,30 +18,41 @@ services:
       retries: 3
     restart: always
 
-  api:
-    image: astakhovaskold/mdc-webapp
-    container_name: mdc-webapp
-    restart: unless-stopped
+#  prod:
+#    container_name: mdc-prod
+#    build: .
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
+#    ports:
+#      - 80:3000
+#    networks:
+#      - mdc-network
+#    command:
+#      - pnpm run build
+#      - pnpm run start:prod
+#    env_file:
+#      - .env.production
+#    restart: unless-stopped
+#    depends_on:
+#      - mongodb
+
+  dev:
+    container_name: mdc-dev
     build:
-      context: .
-      dockerfile: Dockerfile
-      # ✨ Target the dev stage
-      target: dev
-    # Mount host directory to docker container to support watch mode
+      dockerfile: ./DockerfileDev
     volumes:
       - .:/app
-      # This ensures that the NestJS container manages the node_modules folder
-      # rather than synchronizes it with the host machine
       - /app/node_modules
-    env_file:
-      - .env.development
     ports:
       - 3000:3000
     networks:
       - mdc-network
+    env_file:
+      - .env.development
+    restart: unless-stopped
     depends_on:
       - mongo
-    command: npx nest start --watch
 
 networks:
   mdc-network:
