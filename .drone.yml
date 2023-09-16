@@ -70,6 +70,19 @@ steps:
         - ${DRONE_COMMIT_BRANCH//\//-}
       platform:
         - linux/amd64
+      build_args_from_env:
+        MONGO_URL:
+          from_secret: MONGO_URL
+        MONGO_USERNAME:
+          from_secret: MONGO_USERNAME
+        MONGO_PASSWORD:
+          from_secret: MONGO_PASSWORD
+        MONGO_DATABASE:
+          from_secret: MONGO_DATABASE
+        JWT_ACCESS_SECRET:
+          from_secret: JWT_ACCESS_SECRET
+        JWT_REFRESH_SECRET:
+          from_secret: JWT_REFRESH_SECRET
     when:
       branch:
         include:
@@ -77,7 +90,7 @@ steps:
         - master
     depends_on:
       - lint
-  
+
   - name: notification
     image: appleboy/drone-telegram
     settings:
