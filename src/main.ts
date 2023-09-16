@@ -12,7 +12,7 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
 
     const config = new DocumentBuilder()
-        .setTitle('chameleon42 API')
+        .setTitle('Klinics API')
         .setVersion('1.0')
         .addBearerAuth()
         .addSecurityRequirements('bearer')

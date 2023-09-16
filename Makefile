@@ -41,15 +41,3 @@ drone-runner:
 
 drone-up:
 	- docker container rm -f drone runner && make drone-ci && make drone-runner
-
-up:
-	- docker run --detach \
-            --label=traefik.enable=true \
-            --label=traefik.port=3000 \
-            --label=traefik.docker.network=web \
-            --label=traefik.http.routers.drone.entrypoints=websecure \
-            --label="traefik.http.routers.api.rule=(Host('klinics.webber.pw') && PathPrefix('/api'))" \
-            --label=traefik.http.routers.mongo.tls.certresolver=letsEncrypt \
-            --restart=always \
-            --name=klinics-webapp_dev \
-            astakhovaskold/klinics-webapp:develop
