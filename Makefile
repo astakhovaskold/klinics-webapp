@@ -48,7 +48,7 @@ up:
             --label=traefik.port=3000 \
             --label=traefik.docker.network=web \
             --label=traefik.http.routers.drone.entrypoints=websecure \
-            --label="traefik.http.routers.api.rule=(Host(`klinics.webber.pw`) && PathPrefix(`/api`))" \
+            --label="traefik.http.routers.api.rule=(Host('klinics.webber.pw') && PathPrefix('/api'))" \
             --label=traefik.http.routers.mongo.tls.certresolver=letsEncrypt \
             --restart=always \
             --name=klinics-webapp_dev \
