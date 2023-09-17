@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Install app dependencies
-RUN npm install -g pnpm@7.27.0
+RUN npm install -g pnpm@8.7.0
 RUN pnpm install --frozen-lockfile
 
 RUN pnpm run build

@@ -21,7 +21,7 @@ steps:
   - name: install
     image: node:18.14.0-alpine
     commands:
-      - npm install -g pnpm@7.27.0
+      - npm install -g pnpm@8.7.0
       - npm -v
       - pnpm install --frozen-lockfile --unsafe-perm
     depends_on:
@@ -30,7 +30,7 @@ steps:
   - name: lint
     image: node:18.14.0-alpine
     commands:
-      - npm install -g pnpm@7.27.0
+      - npm install -g pnpm@8.7.0
       - pnpm run lint
     when:
       branch:
